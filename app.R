@@ -8,11 +8,10 @@ library(SingleCellExperiment)
 library(ggplot2)
 library(viridis)
 library(plotly)
+library(here)
 
-setwd("~/Documents/RissoLab/sandrilab_cachectic_multiome/shiny_app")
-
-load("palette_color.RData")
-sce <- readRDS("shiny_app_sce.rds")
+load(here("data", "palette_color.RData"))
+sce <- readRDS(here("data", "shiny_app_sce.rds"))
 
 # UMAP data configuration 
 
@@ -67,7 +66,7 @@ ui <- fluidPage(
 
 # server #####
 
-server <- function(input, output, sesstion) {
+server <- function(input, output, session) {
   
   expression_data <- reactive({
     # req(input$gene, input$assay)
