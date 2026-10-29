@@ -1,0 +1,27 @@
+Dockerfile
+  s_f99a32d5ffcceb::t_fe5cd909197b52 7-10
+  s_f99a32d5ffcceb::t_bbcb0505e65c61 3,5-6,11,13-17
+  s_f99a32d5ffcceb::t_aaec04536d9e74 1-2,4,12
+  s_f99a32d5ffcceb::t_ba227957fa7910 18
+.dockerignore
+  s_f99a32d5ffcceb::t_b31caff893419d 1-2
+app.R
+  s_f99a32d5ffcceb::t_c04b581f234adf 11,13-14
+  s_f99a32d5ffcceb::t_d07203d010ac6a 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e73064c4e8071157e37ca73c0c570af838c3240e",
+  "prompts": {},
+  "sessions": {
+    "s_f99a32d5ffcceb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e78c88d57ffeYqmbmPgFMvfzpw",
+        "model": "nw-full"
+      },
+      "human_author": "Riccardo Ceccaroni <riccardo.ceccaroni.95@gmail.com>"
+    }
+  }
+}
