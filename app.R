@@ -12,6 +12,8 @@ library(plotly)
 setwd("~/Documents/RissoLab/sandrilab_cachectic_multiome/shiny_app")
 
 load("palette_color.RData")
+palette_color[16:17] <- c("blue", "red")
+names(palette_color) <- c(names(palette_color)[1:17], "CTRL_1", "CTRL_2", "C26_1", "C26_2")
 sce <- readRDS("shiny_app_sce.rds")
 
 # UMAP data configuration 
@@ -29,7 +31,7 @@ genes <- rownames(sce)
 ui <- fluidPage(
   titlePanel("CachexiaAtlas: visualizaion of gene expression in cachexia condition"),
   tags$p("CachexiaAtlas is an interactive tool for exploring gene expression across cell populations in cachexia.
-         Visualize cell identities and gene expression patterns using UMAP and violin plots, and investigate expression differences between cell types.
+         Visualize cells and gene expression using UMAP and violin plots, and investigate expression differences between cell types.
          If you use CachexiaAtlas in your work, please cite: Pezzini C., Persico G., Zuin E., et al. 2026 (Cell Reports Medicine).", 
          style = paste("font-size: 16px;", "color: #555555;","line-height: 1.6;", "margin-bottom: 25px;")),
   
@@ -77,7 +79,7 @@ server <- function(input, output, sesstion) {
     as.numeric(values)
   })  
   
-  # UMAP: cell type #####
+  # UMAP: cell type ####
   
   umap_ct <- reactive({
     req(input$group)
@@ -85,18 +87,38 @@ server <- function(input, output, sesstion) {
     df <- coords
     df$Group <- factor(as.character(df[[input$group]]))
     
-    ggplot(df, aes(x = wnnUMAP_1, y = wnnUMAP_2, color = Group,
-                   text = paste0( "UMAP 1: ", round(wnnUMAP_1, 2),
-                                  "<br>UMAP 2: ", round(wnnUMAP_2, 2),
-                                  "<br>", input$group, ": ", Group))) + 
+    if(input$group == "Condition") {
+      df$Group <- factor(df$Group, levels = c("CTRL", "C26")
+      )
+    } else if (input$group == "Donor") {
+      df$Group <- factor(df$Group , levels = c("CTRL_1", "CTRL_2", "C26_1", "C26_2"))
+    } else {
+      df$Group <- as.factor(df$Group)
+    }
+    
+    centroid <- aggregate(cbind(wnnUMAP_1, wnnUMAP_2) ~ `Cell Type`, data = df, FUN = mean)
+    
+    p <- ggplot(df, aes(x = wnnUMAP_1, y = wnnUMAP_2, color = Group,
+                        text = paste0( "UMAP 1: ", round(wnnUMAP_1, 2),
+                                       "<br>UMAP 2: ", round(wnnUMAP_2, 2),
+                                       "<br>", input$group, ": ", Group))) +
       geom_point(size = input$point_size, alpha = input$point_alpha) +
       scale_color_manual(values = palette_color) + facet_wrap(~Condition) +
       theme_bw() + theme(text = element_text(size = 12), legend.text = element_text(size = 12)) +
-      labs(color = input$group)
+      labs(color = input$group) + guides(color = guide_legend(reverse = TRUE))
+    
+    if (input$group == "Cell Type") {
+      p <- p + geom_text(data = centroid, aes(x = wnnUMAP_1, y = wnnUMAP_2, label = `Cell Type`),
+                         inherit.aes = FALSE, color = "black", size = 3.5) +
+        theme(legend.position = "none")
+    } else {
+      p <- p + theme(legend.position = "right")
+    }
+    p
   })
   
   output$umap_celltype <- renderPlotly({
-    ggplotly(umap_ct(), tooltip = "text") %>%
+    ggplotly(umap_ct(), tooltip = "text") %>% 
       layout(hoverlabel = list(bgcolor = "white", font = list(size = 14)))
   })
   
@@ -109,14 +131,14 @@ server <- function(input, output, sesstion) {
     df$Expression <- expression_data()
     df$CellType <- as.factor(coords$`Cell Type`)
     df$Condition <- as.factor(coords$Condition)
-
+    
     ggplot(df, aes(x = wnnUMAP_1, y = wnnUMAP_2, color = Expression,
-                        text = paste0("UMAP 1: ", round(wnnUMAP_1, 2),
-                                      "<br>UMAP 2: ", round(wnnUMAP_2, 2),
-                                      "<br>Gene: ", input$gene,
-                                      "<br>Expression: ", round(Expression, 2),
-                                      "<br>Cell Type: ", CellType,
-                                      "<br>Condition: ", Condition))) +
+                   text = paste0("UMAP 1: ", round(wnnUMAP_1, 2),
+                                 "<br>UMAP 2: ", round(wnnUMAP_2, 2),
+                                 "<br>Gene: ", input$gene,
+                                 "<br>Expression: ", round(Expression, 2),
+                                 "<br>Cell Type: ", CellType,
+                                 "<br>Condition: ", Condition))) +
       geom_point(size = input$point_size, alpha = input$point_alpha) +
       scale_color_gradient(low = "grey90", high = "darkblue", name = paste0(input$gene, " \nExpression")) +
       theme_bw() + theme(text = element_text(size = 12), legend.text = element_text(size = 12))
@@ -234,4 +256,3 @@ shinyApp(
   ui = ui,
   server = server
 )
-
