@@ -31,7 +31,7 @@ genes <- rownames(sce)
 ui <- fluidPage(
   titlePanel("CachexiaAtlas: visualizaion of gene expression in cachexia condition"),
   tags$p("CachexiaAtlas is an interactive tool for exploring gene expression across cell populations in cachexia.
-         Visualize cell identities and gene expression patterns using UMAP and violin plots, and investigate expression differences between cell types.
+         Visualize cells and gene expression using UMAP and violin plots, and investigate expression differences between cell types.
          If you use CachexiaAtlas in your work, please cite: Pezzini C., Persico G., Zuin E., et al. 2026 (Cell Reports Medicine).", 
          style = paste("font-size: 16px;", "color: #555555;","line-height: 1.6;", "margin-bottom: 25px;")),
   
