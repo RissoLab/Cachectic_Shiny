@@ -8,13 +8,14 @@ library(SingleCellExperiment)
 library(ggplot2)
 library(viridis)
 library(plotly)
+library(here)
 
-setwd("~/Documents/RissoLab/sandrilab_cachectic_multiome/shiny_app")
+load(here("data", "palette_color.RData"))
+sce <- readRDS(here("data", "shiny_app_sce.rds"))
 
 load("palette_color.RData")
 palette_color[16:17] <- c("blue", "red")
 names(palette_color) <- c(names(palette_color)[1:17], "CTRL_1", "CTRL_2", "C26_1", "C26_2")
-sce <- readRDS("shiny_app_sce.rds")
 
 # UMAP data configuration 
 
