@@ -2,6 +2,7 @@
 # CachexiaAtlas
 # Interactive tool for exploring gene expression across cell populations in cachexia
 # ===================================================================================
+# Test AutoUpdate
 
 library(shiny)
 library(SingleCellExperiment)
